@@ -15,7 +15,6 @@ public class Estudiante {
         return nombre;
     }
 
-
     public int getEdad() {
         return edad;
     }

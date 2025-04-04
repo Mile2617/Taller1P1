@@ -37,6 +37,7 @@ public class Sistemanotas {
                 System.out.println("Primero debe crear materias antes de estudiantes.");
                 return;
             }
+
             Scanner sc = new Scanner(System.in);
             System.out.println("Ingrese nombre del estudiante:");
             String nombre = sc.next();
@@ -45,10 +46,32 @@ public class Sistemanotas {
 
             Estudiante est = new Estudiante(nombre, edad, contMaterias);
 
-            for (int i = 0; i < contMaterias; i++) {
-                double nota = pedirNota(sc, "Ingrese la nota para la materia " + materias[i].getNombre() + ": ");
-                est.setNota(i, nota);
-            }
+            int opcion;
+            do {
+                System.out.println("\n--- Seleccione una Materia para ingresar nota ---");
+                for (int i = 0; i < contMaterias; i++) {
+                    System.out.println((i + 1) + ". " + materias[i].getNombre());
+                }
+                System.out.println((contMaterias + 1) + ". Salir");
+                System.out.print("Seleccione una opción: ");
+                opcion = sc.nextInt();
+
+                switch (opcion) {
+                    case 1: case 2: case 3: case 4: case 5:
+                        if (opcion >= 1 && opcion <= contMaterias) {
+                            double nota = pedirNota(sc, "Ingrese la nota para " + materias[opcion - 1].getNombre() + ": ");
+                            est.setNota(opcion - 1, nota);
+                        } else {
+                            System.out.println("Materia no existe.");
+                        }
+                        break;
+                    case 6:
+                        System.out.println("Saliendo de asignación de materias...");
+                        break;
+                    default:
+                        System.out.println("Opción inválida. Intente de nuevo.");
+                }
+            } while (opcion != contMaterias + 1);
 
             estudiantes[contEstudiantes] = est;
             contEstudiantes++;
@@ -64,22 +87,35 @@ public class Sistemanotas {
         }
 
         for (int i = 0; i < contEstudiantes; i++) {
-            System.out.println("\nEstudiante #" + (i + 1)); // Mostramos i+1 para que sea más entendible
+            System.out.println("\nEstudiante #" + (i + 1));
             System.out.println("Nombre: " + estudiantes[i].getNombre());
             System.out.println("Edad: " + estudiantes[i].getEdad());
+
             double[] notas = estudiantes[i].getNotas();
             double sumaNotas = 0;
-            for (int j = 0; j < contMaterias; j++) {
-                System.out.println("Nota en " + materias[j].getNombre() + ": " + notas[j]);
-                sumaNotas += notas[j];
-            }
-            double promedio = sumaNotas / contMaterias;
-            System.out.println("Promedio general: " + promedio);
+            int materiasConNota = 0;
 
-            if (promedio >= 7.0) {
-                System.out.println("Estado: Aprobado");
+            for (int j = 0; j < contMaterias; j++) {
+                if (notas[j] > 0) {
+                    System.out.println("Nota en " + materias[j].getNombre() + ": " + notas[j]);
+                    sumaNotas += notas[j];
+                    materiasConNota++;
+                } else {
+                    System.out.println("Nota en " + materias[j].getNombre() + ": (Sin nota asignada)");
+                }
+            }
+
+            if (materiasConNota > 0) {
+                double promedio = sumaNotas / materiasConNota;
+                System.out.println("Promedio general (solo materias con nota): " + promedio);
+
+                if (promedio >= 7.0) {
+                    System.out.println("Estado: Aprobado");
+                } else {
+                    System.out.println("Estado: Reprobado");
+                }
             } else {
-                System.out.println("Estado: Reprobado");
+                System.out.println("No se ingresaron notas para este estudiante.");
             }
         }
     }
